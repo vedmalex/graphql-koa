@@ -13,8 +13,9 @@ import getBody from 'raw-body';
 import httpError from 'http-errors';
 import querystring from 'querystring';
 import zlib from 'zlib';
-import type { Request } from 'express';
+import type Request from 'koa/lib/request';
 
+type NodeCallback = (error?: ?Error, data?: Object) => void;
 
 export function parseBody(req: Request, next: NodeCallback): void {
   try {
@@ -47,7 +48,7 @@ export function parseBody(req: Request, next: NodeCallback): void {
   }
 }
 
-type NodeCallback = (error?: ?Error, data?: Object) => void;
+
 
 function jsonEncodedParser(body) {
   if (jsonObjRegex.test(body)) {

@@ -1,11 +1,11 @@
 GraphQL Koa Middleware
 ==========================
 
-#### Development in progress. Currently not working. Just reserved the package name.
-
 This is just a simple conversion of [express-graphql](https://github.com/graphql/express-graphql) for Koa.
-This package has not been thoroughly tested.
-We are actively looking for contributors to help with testing.
+Almost all credit goes to the original express-graphql authors and contributors.
+
+**!!! This package has not been thoroughly tested.
+We are actively looking for contributors to help with testing.**
 
 Create a GraphQL HTTP server with [Koa](http://koajs.com).
 

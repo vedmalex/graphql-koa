@@ -12,7 +12,8 @@ import httpError from 'http-errors';
 import { graphql } from 'graphql';
 import { formatError } from 'graphql/error';
 import { parseBody } from './parseBody';
-import type { Request, Response } from 'express';
+import type Request from 'koa/lib/request';
+import type Response from 'koa/lib/response';
 
 /**
  * Used to configure the graphQLHTTP middleware by providing a schema
@@ -33,7 +34,7 @@ export type OptionsObj = {
   /**
    * A boolean to configure whether the output should be pretty-printed.
    */
-  pretty?: ?boolean,
+  pretty?: ?boolean
 };
 
 type Middleware = (request: Request, response: Response) => void;
@@ -47,51 +48,54 @@ export default function graphqlHTTP(options: Options): Middleware {
     throw new Error('GraphQL middleware requires options.');
   }
 
-  return (request: Request, response: Response) => {
+  return function *graphqlHTTPMiddleware(next) {
+    let { request, response } = this;
+
     // Get GraphQL options given this request.
-    var { schema, rootValue, pretty } = getOptions(options, request);
+    let { schema, rootValue, pretty } = getOptions(options, request);
 
-    // GraphQL HTTP only supports GET and POST methods.
-    if (request.method !== 'GET' && request.method !== 'POST') {
-      response.set('Allow', 'GET, POST');
-      return sendError(
-        response,
-        httpError(405, 'GraphQL only supports GET and POST requests.'),
-        pretty
-      );
-    }
+    this.body = yield new Promise( (resolve, reject) => {
 
-    // Parse the Request body.
-    parseBody(request, (error, data = {}) => {
-
-      // Format any request errors the same as GraphQL errors.
-      if (error) {
-        return sendError(response, error, pretty);
+      // GraphQL HTTP only supports GET and POST methods.
+      if (request.method !== 'GET' && request.method !== 'POST') {
+        this.set('Allow', 'GET, POST');
+        return sendError(
+          response,
+          httpError(405, 'GraphQL only supports GET and POST requests.'),
+          pretty
+        );
       }
 
-      // Get GraphQL params from the request and POST body data.
-      var { query, variables, operationName } = getGraphQLParams(request, data);
+      // Parse the Request body.
+      parseBody(request, (error, data = {}) => {
 
-      // Run GraphQL query.
-      graphql(
-        schema,
-        query,
-        rootValue,
-        variables,
-        operationName
-      ).then(result => {
-
-        // Format any encountered errors.
-        if (result.errors) {
-          result.errors = result.errors.map(formatError);
+        // Format any request errors the same as GraphQL errors.
+        if (error) {
+          return sendError(response, error, pretty);
         }
 
-        // Report 200:Success if a data key exists,
-        // Otherwise 400:BadRequest if only errors exist.
-        response
-          .status(result.hasOwnProperty('data') ? 200 : 400)
-          .set('Content-Type', 'text/json')
-          .send(JSON.stringify(result, null, pretty ? 2 : 0));
+        // Get GraphQL params from the request and POST body data.
+        var { query, variables, operationName } = getGraphQLParams(request, data);
+
+        // Run GraphQL query.
+        graphql(
+          schema,
+          query,
+          rootValue,
+          variables,
+          operationName
+        ).then(result => {
+          // Format any encountered errors.
+          if (result.errors) {
+            result.errors = result.errors.map(formatError);
+          }
+
+          // Report 200:Success if a data key exists,
+          // Otherwise 400:BadRequest if only errors exist.
+          this.set('Content-Type', 'text/json');
+          this.status = result.hasOwnProperty('data') ? 200 : 400;
+          resolve( JSON.stringify(result, null, pretty ? 2 : 0) );
+        });
       });
     });
   };
@@ -156,8 +160,7 @@ function getGraphQLParams(request: Request, data: Object): GraphQLParams {
  */
 function sendError(response: Response, error: Error, pretty?: ?boolean): void {
   var errorResponse = { errors: [ formatError(error) ] };
-  response
-    .status(error.status || 500)
-    .set('Content-Type', 'text/json')
-    .send(JSON.stringify(errorResponse, null, pretty ? 2 : 0));
+  response.status = error.status || 500;
+  response.set('Content-Type', 'text/json')
+  response.body = JSON.stringify(errorResponse, null, pretty ? 2 : 0);
 }
