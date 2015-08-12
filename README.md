@@ -10,13 +10,13 @@ We are actively looking for contributors to help with testing.
 Create a GraphQL HTTP server with [Koa](http://koajs.com).
 
 ```sh
-npm install --save koa-graphql
+npm install --save graphql-koa
 ```
 
-Install koa-graphql as middleware in your koa server:
+Install graphql-koa as middleware in your koa server:
 
 ```js
-var graphqlHTTP = require('koa-graphql');
+var graphqlHTTP = require('graphql-koa');
 
 var app = koa();
 
@@ -39,7 +39,7 @@ The `graphqlHTTP` function accepts the following options:
 
 ### HTTP Usage
 
-Once installed at a path, `koa-graphql` will accept requests with
+Once installed at a path, `graphql-koa` will accept requests with
 the parameters:
 
   * **`query`**: A string GraphQL document to be executed.
@@ -63,7 +63,7 @@ If not found in the query-string, it will look in the POST request body.
 If a previous middleware has already parsed the POST body, the `request.body`
 value will be used.
 
-If the POST body has not yet been parsed, koa-graphql will interpret it
+If the POST body has not yet been parsed, graphql-koa will interpret it
 depending on the provided *Content-Type* header.
 
   * **`application/json`**: the POST body will be parsed as a JSON

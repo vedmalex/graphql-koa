@@ -1,5 +1,5 @@
 {
-  "name": "koa-graphql",
+  "name": "graphql-koa",
   "version": "0.0.1",
   "description": "Create a GraphQL HTTP server with Express.",
   "contributors": [
@@ -9,11 +9,11 @@
   ],
   "license": "BSD-3-Clause",
   "bugs": {
-    "url": "https://github.com/buildwithlow/koa-graphql/issues"
+    "url": "https://github.com/buildwithlow/graphql-koa/issues"
   },
   "repository": {
     "type": "git",
-    "url": "http://github.com/buildwithlow/koa-graphql.git"
+    "url": "http://github.com/buildwithlow/graphql-koa.git"
   },
   "keywords": [
     "koa",
