@@ -13,14 +13,15 @@ Create a GraphQL HTTP server with [Koa](http://koajs.com).
 npm install --save graphql-koa
 ```
 
-Install graphql-koa as middleware in your koa server:
+Install graphql-koa as middleware in your koa server (mount via `koa-mount`):
 
 ```js
 var graphqlHTTP = require('graphql-koa');
+var mount = require('koa-mount');
 
 var app = koa();
 
-app.use('/graphql', graphqlHTTP({ schema: MyGraphQLSchema }));
+app.use( mount('/graphql', graphqlHTTP({ schema: MyGraphQLSchema })) )
 ```
 
 
