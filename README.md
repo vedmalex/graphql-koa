@@ -1,21 +1,24 @@
-GraphQL Express Middleware
+GraphQL Koa Middleware
 ==========================
 
-[![Build Status](https://travis-ci.org/graphql/express-graphql.svg)](https://travis-ci.org/graphql/express-graphql)
-[![Coverage Status](https://coveralls.io/repos/graphql/express-graphql/badge.svg?branch=master&service=github)](https://coveralls.io/github/graphql/express-graphql?branch=master)
+#### Development in progress. Currently not working. Just reserved the package name.
 
-Create a GraphQL HTTP server with [Express](http://expressjs.com).
+This is just a simple conversion of [express-graphql](https://github.com/graphql/express-graphql) for Koa.
+This package has not been thoroughly tested.
+We are actively looking for contributors to help with testing.
+
+Create a GraphQL HTTP server with [Koa](http://koajs.com).
 
 ```sh
-npm install --save express-graphql
+npm install --save koa-graphql
 ```
 
-Install express-graphql as middleware in your express server:
+Install koa-graphql as middleware in your koa server:
 
 ```js
-var graphqlHTTP = require('express-graphql');
+var graphqlHTTP = require('koa-graphql');
 
-var app = express();
+var app = koa();
 
 app.use('/graphql', graphqlHTTP({ schema: MyGraphQLSchema }));
 ```
@@ -36,7 +39,7 @@ The `graphqlHTTP` function accepts the following options:
 
 ### HTTP Usage
 
-Once installed at a path, `express-graphql` will accept requests with
+Once installed at a path, `koa-graphql` will accept requests with
 the parameters:
 
   * **`query`**: A string GraphQL document to be executed.
@@ -58,11 +61,9 @@ GraphQL will first look for each parameter in the URL's query-string:
 If not found in the query-string, it will look in the POST request body.
 
 If a previous middleware has already parsed the POST body, the `request.body`
-value will be used. Use [`multer`][] or a similar middleware to add support
-for `multipart/form-data` content, which may be useful for GraphQL mutations
-involving uploading files.
+value will be used.
 
-If the POST body has not yet been parsed, graphql-express will interpret it
+If the POST body has not yet been parsed, koa-graphql will interpret it
 depending on the provided *Content-Type* header.
 
   * **`application/json`**: the POST body will be parsed as a JSON
@@ -75,30 +76,6 @@ depending on the provided *Content-Type* header.
     query string, which provides the `query` parameter.
 
 
-### Advanced Options
 
-In order to support advanced scenarios such as installing a GraphQL server on a
-dynamic endpoint or accessing the current authentication information,
-graphql-express allows options to be provided as a function of each
-express request.
-
-This example uses [`express-session`][] to run GraphQL on a rootValue based on
-the currently logged-in session.
-
-```js
-var session = require('express-session');
-var graphqlHTTP = require('express-graphql');
-
-var app = express();
-
-app.use(session({ secret: 'keyboard cat', cookie: { maxAge: 60000 }}));
-
-app.use('/graphql', graphqlHTTP(request => ({
-  schema: MySessionAwareGraphQLSchema,
-  rootValue: request.session
-})));
-```
 
 [`graphql-js`]: https://github.com/graphql/graphql-js
-[`multer`]: https://github.com/expressjs/multer
-[`express-session`]: https://github.com/expressjs/session
