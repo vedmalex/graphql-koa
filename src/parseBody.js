@@ -95,7 +95,7 @@ function read(req, typeInfo, parseFn, next) {
   var encoding = (req.headers['content-encoding'] || 'identity').toLowerCase();
   var length = encoding === 'identity' ? req.headers['content-length'] : null;
   var limit = 100 * 1024; // 100kb
-  var stream = decompressed(req, encoding);
+  var stream = decompressed(req.req, encoding);
 
   // Read body from stream.
   getBody(stream, { encoding: charset, length, limit }, function (err, body) {
